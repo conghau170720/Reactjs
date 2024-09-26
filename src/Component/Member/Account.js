@@ -1,169 +1,141 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
-import Error from "./Error";
+import Errors from "../Errors/Errors"
+import axios from "axios"
+
 
 function Account(){
-    const [getFile , setFile] = useState({
-        file : ""
+    const [getInput, setInput] = useState({
+        name:"",
+        email:"",
+        password:"",
+        address:"",
+        phone:"",
     })
-    const [getAvatar , setAvatar] = useState("")
-    const [getErrors, setErrors] = useState({})
-    const [getUser, setUser] = useState ({
-        name : "",
-        email : "",
-        password : "",
-        address : "",
-        phone : "",
-        file : ""
-    });
+    const [getFile, setFile] = useState({
+        file:""
+    })
+    const [getAvatar, setAvatar] = useState("")
+    const [getError, setError] = useState({})
 
-    const listType = ["png", "jpg", "jpeg", "PNG", "JPG"]
-    useEffect(() => {
-        let userData = localStorage.getItem("demo2")
+    useEffect(()=>{
+        let userData = localStorage.getItem("demo1")
         if(userData){
-            userData = JSON.parse(userData) 
-            userData = userData.user 
-            setUser({
-                name : userData.name,
-                email : userData.email,
-                phone : userData.phone,
-                address : userData.address,
-                avatar : userData.avatar,
-                iduser : userData.id,
-                avatar : userData.avatar
+            userData = JSON.parse(userData)
+            userData = userData.user
+            // console.log(userData);
+            
+            setInput({
+                name: userData.name,
+                email: userData.email,
+                address: userData.address,
+                phone: userData.phone,
             })
+            
         }
-    }, [])
-    
-    const handleInput = (e) => {
-        const nameData = e.target.name
-        const valueData =  e.target.value
-        setUser(state => ({...state,[nameData]:valueData}))
-    }
+    },[])
 
     function handleFile(e){
         const file = e.target.files;
-        const nameFile = e.target.name;
+
         let reader = new FileReader();
         reader.onload = (e) => {
             setAvatar(e.target.result)
             setFile(file[0])
-        }
+        };
         reader.readAsDataURL(file[0])
-        setUser(state => ({...state,[nameFile]:file}))
+    }
 
+    function handleInput(e){
+        const valueInput = e.target.value;
+        const nameInput = e.target.name
+        setInput(state => ({...state,[nameInput]:valueInput}))
     }
     
-    
     function handleSubmit(e){
-        e.preventDefault()
-        let errorSubmit = {}
-        let flag = true
-        if(getUser.name == ""){
+        e.preventDefault();
+        let errorSubmit = {};
+        let flag = true;
+        if(getInput.name == ""){
             errorSubmit.name = "vui lòng nhập tên"
             flag = false
         }
-        if(getUser.phone == ""){
+        if(getInput.address == ""){
+            errorSubmit.address = "vui lòng nhập địa chỉ"
+            flag = false
+        }
+        if(getInput.phone == ""){
             errorSubmit.phone = "vui lòng nhập Sđt"
             flag = false
         }
-        if(getUser.address == ""){
-            errorSubmit.address = "vui lòng nhập Địa chỉ"
-            flag = false
-        }
-        if(getFile.file == ""){
-            errorSubmit.file = "vui lòng thêm ảnh"
-            flag = false
-          }else{
-             const getName = getFile["name"];
-             const getType = getFile["type"];
-             const getSize = getFile["size"]
-             if(getSize > 1024 * 1024){
-                errorSubmit.file = "file lớn hơn 1mb"
-             }else{
-                let findName = getName.split(".");
-                let findType = getType.split("/");
-                if(!listType.includes(findName[1]) && !listType.includes(findType[1])){
-                  errorSubmit.file = "file không đúng định dạng "
-                }
-             }
-          }
         if(!flag){
-            setErrors(errorSubmit)
+            setError(errorSubmit)
         }else{
-            let userData = localStorage.getItem("demo2")
+            let userData = localStorage.getItem("demo1")
             if(userData){
                 userData = JSON.parse(userData)
                 console.log(userData);
                 
-                let config = {
-                    headers: {
-                        'Authorization': 'Bearer '+ userData.token,
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json'
-                    }
-                }
-                const data = {
-                    name : getUser.name,
-                    email : getUser.email,
-                    password : (getUser.password ? getUser.password : 0),
-                    phone : getUser.phone,
-                    address : getUser.address,
-                    avatar : getAvatar
-                }
-                
-                axios.post("http://localhost/laravel8/laravel8/public/api/user/update/" + userData.user.id, data, config)
-                .then(response => {
-                    console.log(response);
-                    alert("thành công")
+                let config = { 
+                    headers: { 
+                    'Authorization': 'Bearer '+ userData.token,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
+                    } 
+                };	
+
+                const formData = new FormData();
+                    formData.append('name', getInput.name);
+                    formData.append('email', getInput.email);
+                    formData.append('password', getInput.password);
+                    formData.append('address',getInput.address);
+                    formData.append('phone', getInput.phone);
+                    formData.append('avatar', getAvatar);
+
+                axios.post("http://localhost/laravel8/laravel8/public/api/user/update/"+ userData.user.id, formData, config)
+                .then(res =>{
+                    alert("cập nhật thành công")
+                    console.log(res.data.Auth);
                     const params = {
-                        token : response.data.token,
-                        user : response.data.Auth
+                        token : res.data.token ,
+                        user : res.data.Auth
                     }
-                    // console.log(params);
+                    localStorage.setItem("demo1",JSON.stringify(params))
+                })
+                .catch(function(error){
+                    console.log(error);
                     
-                    let userData = JSON.stringify(params)
-                    localStorage.setItem("demo2", userData)
                 })
-                .catch(function (error){
-                    console.log(error); 
-                })
-                }
+            }   
         }
     }
     
-    function renderData(){
-            return(
-                
-                <form onSubmit={handleSubmit} action="#">
-                    <input name="name" type="name" placeholder="Name"  value={getUser.name} onChange={handleInput}/>
-                    <input readOnly name="email" type="email" placeholder="Email" value={getUser.email} onChange={handleInput} />
-                    <input name="password" type="password" placeholder="Password" value={getUser.password} onChange={handleInput} />
-                    <input name="address" type="address" placeholder="Address" value={getUser.address} onChange={handleInput} />
-                    <input name="phone" type="phone" placeholder="Phone" value={getUser.phone} onChange={handleInput} />
-                    <input name="avatar" type="file" onChange={handleFile} />
-                    <img width="100px" height="100px" src={"http://localhost/laravel8/laravel8/public/upload/user/avatar/" + getUser.avatar} alt="" />
+    function renderInput(){
+        return  <form onSubmit={handleSubmit} action="#">
+                    <input name="name" type="name" placeholder="Name" onChange={handleInput} value={getInput.name} />
+                    <input name="email" type="email" placeholder="Email Address" onChange={handleInput} value={getInput.email} readOnly />
+                    <input name="password" type="password" placeholder="Password" onChange={handleInput}  />
+                    <input name="address" type="address" placeholder="Address" onChange={handleInput} value={getInput.address} />
+                    <input name="phone" type="phone" placeholder="Phone" onChange={handleInput} value={getInput.phone} />
+                    <input name="file" type="file" onChange={handleFile} />
                     <button type="submit" className="btn btn-default">Signup</button>
                 </form>
-            )
     }
     
-    return (
-    <>
-        
+    
+
+
+    return(
         <div className="col-sm-9">
             <div className="blog-post-area">
                 <h2 className="title text-center">Update user</h2>
                 <div className="signup-form">{/*sign up form*/}
-                    <h2>Update User!</h2>
-                    <Error errors = {getErrors} />
-                    {renderData()}
+                    <h2>Update!</h2>
+                    <Errors errors = {getError}/>
+                    {renderInput()}
                 </div>
             </div>
-      </div>
-    </>
-    )
-   
+        </div>
 
+    )
 }
 export default Account

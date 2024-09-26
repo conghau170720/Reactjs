@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 
 function MenuAccount(){
-    return(
+    return (
         <div className="col-sm-3">
             <div className="left-sidebar">
                 <h2>Account</h2>
@@ -13,17 +13,12 @@ function MenuAccount(){
                     </div>
                     <div className="panel panel-default">
                         <div className="panel-heading">
-                            <h4 className="panel-title"><Link to="http://localhost:3000/myproduct">My product</Link></h4>
-                        </div>
-                    </div>
-                    <div className="panel panel-default">
-                        <div className="panel-heading">
-                            <h4 className="panel-title"><Link to="http://localhost:3000/addproduct">Add product</Link></h4>
+                            <h4 className="panel-title"><Link to="http://localhost:3000/account/myproduct">My product</Link></h4>
                         </div>
                     </div>
                 </div>{/*/category-products*/}
             </div>
-         </div>
+        </div>
     )
 }
 export default MenuAccount

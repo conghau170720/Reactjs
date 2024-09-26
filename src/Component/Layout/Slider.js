@@ -1,21 +1,4 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
-
 function Slider(){
-    const [getData, setData] = useState([])
-    useEffect(() => {
-        axios.get("http://localhost/laravel8/laravel8/public/api/product")
-        .then(res => {
-            setData(res.data.data)
-        })
-        .catch(function(error){
-            console.log(error);   
-        })
-    },[])
-    
-        
-
     return(
         <section id="slider">{/*slider*/}
             <div className="container">
@@ -35,7 +18,10 @@ function Slider(){
                                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
                                         <button type="button" className="btn btn-default get">Get it now</button>
                                     </div>
-                                   
+                                    <div className="col-sm-6">
+                                        <img src="https://www.chuphinhsanpham.vn/wp-content/uploads/2017/10/chup-hinh-quan-ao-voi-nguoi-mau.jpg" className="girl img-responsive" alt="" />
+                                        <img src="images/home/pricing.png" className="pricing" alt="" />
+                                    </div>
                                 </div>
                                 <div className="item">
                                     <div className="col-sm-6">
@@ -63,17 +49,16 @@ function Slider(){
                                 </div>
                             </div>
                             <a href="#slider-carousel" className="left control-carousel hidden-xs" data-slide="prev">
-                                <i className="fa fa-angle-left" />
+                            <i className="fa fa-angle-left" />
                             </a>
                             <a href="#slider-carousel" className="right control-carousel hidden-xs" data-slide="next">
-                                <i className="fa fa-angle-right" />
+                            <i className="fa fa-angle-right" />
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </section>/*/slider*/
     )
-   
 }
 export default Slider

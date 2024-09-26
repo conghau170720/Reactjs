@@ -480,5 +480,46 @@
     }
 }
 .yy{
-    display: inline-block;
+    display: ruby;
+}
+.zz{
+    display: flex;
+    justify-content: space-around;
+}
+.pp{
+    display: flex;
+    justify-content: space-around;
+}
+.mm{
+    color: red;
+}
+.tt{
+    border: 1px solid #B4B1AB
+}
+.fontAddNew{
+    color: #fff;
+    background-color: #FE980F;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    padding-top: 5px;
+    float: right;
+}
+.vv{
+     display: flex;
+}
+.EDDL{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 9px ;
+}
+.DL{
+    border: 2px solid #F0F0E9;
+    padding: 0px 5px;
+}
+.avatarCheckbox{
+    display: ruby;
+}
+.fontCheckbox{
+ transform:scale(0.8);
 }

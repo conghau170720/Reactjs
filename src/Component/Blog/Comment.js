@@ -1,73 +1,69 @@
 import axios from "axios";
-import { useState } from "react";
-import BlogDetail from "./BlogDetail";
-import Blog from "./Blog";
+import { useState } from "react"
 
 function Comment(props){
-   
-    let check = localStorage.getItem("demo1")
-    let formuser1 = localStorage.getItem("demo2")
+    // console.log(props);
+    
+    const [getComment, setComment] = useState("")
+    
+    function handelComment(e){
+       setComment(e.target.value);
+    }
 
-    let xx  = props.getIdcomment;
-    
-   
-    const [getData, setData]= useState("")
-    
-    
-    function handleComment(){
-       if(!check){
-             alert("bạn hãy đăng nhập")
-       }else{
-            if(getData == ""){
-                alert("hãy nhập bình luận")
+   function handelCheck(){
+        let check = localStorage.getItem("demo2")
+        if(!check){
+            alert("vui lòng login")
+        }else{
+            if(getComment == ""){
+                alert('vui lòng nhập bình luận')
             }else{
-                if(formuser1){
-                    let userData = JSON.parse(formuser1)
-                    let config = {
-                        headers: {
-                            'Authorization': 'Bearer '+ userData.token,
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Accept': 'application/json'
-                        }
-                    }
+                let useData = localStorage.getItem("demo1")
+                if(useData){
+                    useData = JSON.parse(useData)
+                    let config = { 
+                        headers: { 
+                        'Authorization': 'Bearer '+ useData.token,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json'
+                        } 
+                    };	
                     const formData = new FormData();
-                    formData.append('id_blog', props.idBlog.id)
-                    formData.append('id_user', userData.user.id)
-                    formData.append('id_comment', xx ? xx : 0);
-                    formData.append('comment', getData);
-                    formData.append('image_user', userData.user.avatar);
-                    formData.append('name_user', userData.user.name);
-                  
-                    
-                    axios.post("http://localhost/laravel8/laravel8/public/api/blog/comment/" + props.idBlog.id , formData, config)
-                    .then(res => {
-                        console.log(res)
-                        props.getCmt(res.data.data)
+                        formData.append('id_blog', props.idBlog);
+                        formData.append('id_user', useData.user.id);
+                        formData.append('id_comment', props.idComment ? props.idComment : 0)
+                        formData.append('comment', getComment);
+                        formData.append('image_user', useData.user.avatar)
+                        formData.append('name_user', useData.user.name)
+                    axios.post("http://localhost/laravel8/laravel8/public/api/blog/comment/"+ props.idBlog, formData, config)
+                    .then(response => {
+                        console.log(response);
+                        props.getCmt(response.data.data)
                     })
+                    .catch(function(error){
+                        console.log(error);
+                    }) 
                 }
             }
-       }
-    }
-    function handleInput(e){
-        setData(e.target.value);
-    }
-   
+        }
+   }
+
     return(
         <div className="replay-box">
-            <div className="row">
-                 <div className="col-sm-12">
-                    <h2>Leave a replay</h2>
-                    <div className="text-area">
-                        <div className="blank-arrow">
-                            <label>Your Name</label>
+                <div className="row">
+                    <div className="col-sm-12">
+                        <h2>Leave a replay</h2>
+                        <div className="text-area">
+                            <div className="blank-arrow">
+                                <label>Your Name</label>
+                            </div>
+                            <span>*</span>
+                            <textarea name="comment" rows={11} Value={""} onChange={handelComment} />
+                            <a onClick={handelCheck} className="btn btn-primary" href>post comment</a>
                         </div>
-                        <span>*</span>
-                        <textarea onChange={handleInput} name="message" rows={11} defaultValue={""} />
-                        <a onClick={handleComment}   className="btn btn-primary" >post comment</a>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>/*/Repaly Box*/
     )
 }
 export default Comment

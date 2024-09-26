@@ -1,10 +1,8 @@
-import { useSelector } from "react-redux"
-
+import React from "react";
+import { useSelector } from "react-redux";
 function Test(props){
-    const hobbylist = useSelector(state => state.hobby.list)
-    console.log(hobbylist);
-    return (
-        <p>téh</p>
-    )
+    const hobbyList = useSelector(state => state.hobby.list)
+    console.log(hobbyList);
+    
 }
 export default Test

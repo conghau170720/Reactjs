@@ -1,123 +1,142 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import Error from "./Error";
-function Addproduct(){
-    // tạo UseState
-    const [getCategory , setCategory] = useState([])
-    const [getBrand, setBrand] = useState([])
-    const [showInput , setInput] = useState("")
-    const [getData, setData] = useState({
-        name : "",
-        price :"",
-        category: "",
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Errors from "../Errors/Errors"
+
+function AddProduct(){
+
+    const [getBuy , setBuy] = useState({
+        name:"",
+        price:"",
+        category:"",
         brand:"",
         status: 1,
-        sale:0,
+        sale: 0,
         company:"",
-        detail: ""
-
+        detail:"",
+        image:""
     })
+    const [getCategory , setCategory] = useState([])
+    const [getBrand, setBrand] = useState([])
     const [getError, setError] = useState({})
+    const [getFile, setFile] = useState([])
     const listType = ["png", "jpg", "jpeg", "PNG", "JPG"]
-    const [getFile , setFile] = useState([])
-    const [getAvatar , setAvatar] = useState({})
-    
-    // 
-   
 
-    // Lấy Api
-    useEffect(() => {
+    useEffect(()=>{
         axios.get("http://localhost/laravel8/laravel8/public/api/category-brand")
-        .then(res => {
+        .then(res=>{
             setCategory(res.data.category);
             setBrand(res.data.brand)
-            
-            
         })
         .catch(function(error){
             console.log(error);
+            
         })
-    }, [])
-    // 
+    },[])
+    
+    
+    function renderCategory(e){
+        if(getCategory.length > 0){
+            return getCategory.map((value, key)=>{
+                return <option value={value.id} key={key}>{value.category}</option>
+            })
+        }
+    }
 
+    function renderBrand(){
+        if(getBrand.length > 0){
+            return getBrand.map((value, key)=>{
+                return <option  value={value.id} key={key}>{value.brand}</option>
+            })
+        }
+    }
 
-    // tạo lỗi
-    function handelSubmit(e){
-        e.preventDefault()
-        let errorSubmit = {}
-        let flag = true
+    function renderSale(){
+        if(getBuy.status == 0){
+            return  <div className="vv">
+                        <input className="xx" name="sale" type="sale" placeholder="% Sale" onChange={handleInput} />
+                        <p>%</p> 
+                    </div>
+        }
+       
+    }
 
-        if(getData.name == ""){
+    function handleInput(e){
+        const valueInput = e.target.value;
+        const nameInput = e.target.name;
+        setBuy(state=>({...state,[nameInput]:valueInput}))
+    }
+    
+    function handleFile(e){
+       setFile(e.target.files);
+    }
+    
+    function handleSubmit(e){
+        e.preventDefault();
+        let errorSubmit = {};
+        let flag = true;
+        if(getBuy.name == ""){
             errorSubmit.name = "vui lòng nhập tên"
-            flag = false
+            flag = false;
         }
-        if(getData.email == ""){
-            errorSubmit.email = "vui lòng nhập email"
-            flag = false
+        if(getBuy.price == ""){
+            errorSubmit.price = "vui lòng nhập giá"
+            flag = false;
         }
-        if(getData.category == ""){
-            errorSubmit.category = "vui lòng nhập category"
-            flag = false
+        if(getBuy.category == ""){
+            errorSubmit.category = "vui lòng chọn loại"
+            flag = false;
         }
-        
-        if(getData.brand == ""){
-            errorSubmit.brand = "vui lòng nhập brand"
-            flag = false
+        if(getBuy.brand == ""){
+            errorSubmit.brand = "vui lòng nhập chọn hiệu"
+            flag = false;
         }
-        if(getData.status == ""){
-            errorSubmit.status = "vui lòng nhập trạng thái"
-            flag = false
+        if(getBuy.name == ""){
+            errorSubmit.name = "vui lòng nhập tên"
+            flag = false;
         }
-        if(getData.company == ""){
-            errorSubmit.company = "vui lòng nhập company"
-            flag = false
+        if(getBuy.company == ""){
+            errorSubmit.company = "vui lòng nhập tên công ty"
+            flag = false;
         }
-        if(getData.detail == ""){
-            errorSubmit.detail = "vui lòng nhập detail"
-            flag = false
+        if(getBuy.detail == ""){
+            errorSubmit.detail = "vui lòng nhập nội dung"
+            flag = false;
         }
         if(getFile == ""){
-            errorSubmit.file = "vui lòng chọn ảnh "
+            errorSubmit.file = "vui lòng chọn ảnh"
             flag = false
         }else{
-            if(getFile.length > 3 ){
-                errorSubmit.file = "tối đa 3 ảnh"
+            if(getFile.length > 3){
+                errorSubmit.file = "up tối đa 3 ảnh"
                 flag = false
             }else{
                 const file = Array.from(getFile)
-                if(file.length > 0 ){
-                    for(let i = 0; i < file.length; i++){
-                        const nameFile = file[i].name;
-                        const sizeFile = file[i].size;
-                        // console.log(sizeFile);
-                        const typeFile = file[i].type;
+                if(file.length > 0){
+                    file.map((value, key)=>{
+                        const sizeFile = value.size;
+                        const nameFile = value.name;
+                        const typeFile = value.type;
                         if(sizeFile > 1024 * 1024){
-                            errorSubmit.file = "file > 1mb"
+                            errorSubmit.file = "có ảnh lớn hơn 1mb"
                             flag = false
                         }else{
-                            const findName = nameFile.split(".")
-                            const findType = typeFile.split("/");
+                            const findName = nameFile.split(".");
+                            const findType = typeFile.split("/")
                             if(!listType.includes(findName[1]) && !listType.includes(findType[1])){
                                 errorSubmit.file = "file không đúng định dạng"
-                                flag = false
+                                flag =false
                             }
-                            
                         }
-                    }
+                    })
                 }
-                
-                
-                
             }
         }
         if(!flag){
             setError(errorSubmit)
         }else{
-            let userData = localStorage.getItem("demo2")
+            let userData = localStorage.getItem("demo1")
             if(userData){
                 userData = JSON.parse(userData)
-                // console.log(userData.token);
-                
                 let config = {
                     headers: {
                         'Authorization': 'Bearer '+ userData.token,
@@ -126,109 +145,63 @@ function Addproduct(){
                     }
                 }
                 let formData = new FormData();
-                formData.append('name', getData.name);
-                formData.append('price', getData.price);
-                formData.append('category', getData.category);
-                formData.append('brand', getData.brand);
-                formData.append('company', getData.company);
-                formData.append('detail', getData.detail);
-                formData.append('status', getData.status);
-                formData.append('sale', getData.sale)
-
-                Object.keys(getFile).map((key, index) => {
-                    formData.append("file[]", getFile[key])
-                })
-                axios.post("http://localhost/laravel8/laravel8/public/api/user/product/add" , formData , config)
-                .then(response => {
-                    if(response.data.errors){
-                        setError(response.data.errors);
-                    }else{
-                        console.log(response);
-                        alert("thành công")
-                        
-                    }
-                })
+                    formData.append('name', getBuy.name);
+                    formData.append('price', getBuy.price);
+                    formData.append('category', getBuy.category);
+                    formData.append('brand', getBuy.brand);
+                    formData.append('status', getBuy.status);
+                    formData.append('sale', getBuy.sale);
+                    formData.append('company', getBuy.company);
+                    formData.append('detail', getBuy.detail)
+                    Object.keys(getFile).map((key, index)=>{
+                        formData.append('file[]',getFile[key])
+                    });
+                    axios.post("http://localhost/laravel8/laravel8/public/api/user/product/add", formData , config)
+                    .then(response => {
+                        if(response.data.errors){
+                            setError(response.data.errors);
+                        }else{
+                            console.log(response);
+                            alert("thành công")
+                        }
+                    })
             }
         }
     }
-    // phần avatar
-    
-    // console.log(getData);
-    
-    function handleFile(e){
-        setFile(e.target.files)
-    }
-   
-   
-    
-    // bỏ select vào category
-    function renderCattegory(e){
-        if(getCategory.length > 0){
-            return getCategory.map((value, key) => {
-                return <option key={key} value={value.id}>
-                            {value.category}
-                        </option>
-            })
-        }
-    }
-    // bỏ select vào brand
-    function renderBrand(e){
-        if(getBrand.length > 0){
-            return getBrand.map((value, key) => {
-                return <option key={key} value={value.id}>
-                            {value.brand}
-                        </option>
-            })
-        }
-    }
-    // nơi lấy value và name của All input
-    function handleData(e){
-        const valueInput = e.target.value;
-        const nameInput = e.target.name
-        setData(state => ({...state,[nameInput]:valueInput}))
-    }
-    // console.log(getData);
-    // nơ này hide và show sale
-    function renderSale(){
-        if(getData.status == 0){
-            return <input className="xx" name="sale" type="sale" placeholder="% sale" onChange={handleData} />
-        }
-    }
-
-
-
+    console.log(getBuy);
     
     return(
         <div className="col-sm-9">
             <div className="blog-post-area">
-            <h2 className="title text-center">Create product</h2>
+                <h2 className="title text-center">Add product</h2>
                 <div className="signup-form">{/*sign up form*/}
-                    <h2>Create product</h2>
-                    <Error errors={getError}/>
-                    <form onSubmit={handelSubmit} action="#">
-                        <input name="name" type="name" placeholder="Name" onChange={handleData}/>
-                        <input name="price" type="price" placeholder="Price" onChange={handleData}/>
-                        <select name="category" onChange={handleData} >
-                            <option  value="">Please  choose category</option>
-                            {renderCattegory()}
+                    <h2>Create product!</h2>
+                    <Errors errors={getError} />
+                    <form onSubmit={handleSubmit} encType="multipart/form-data"  action="#">
+                        <input name="name" type="name" placeholder="Name" onChange={handleInput} />
+                        <input name="price" type="price" placeholder="price" onChange={handleInput} />
+                        <select name="category" onChange={handleInput} >
+                            <option>Please choose category</option>
+                            {renderCategory()}
                         </select>
-                        <select name="brand" onChange={handleData}>
-                            <option  value="">Please  choose brand</option>
+                        <select name="brand" onChange={handleInput} >
+                        <option>Please choose brand</option>
                             {renderBrand()}
                         </select>
-                        <select name="status" value={getData.status} onChange={handleData}  >
-                            <option value="1">New</option>
-                            <option value="0">Sale</option>
+                        <select name="status" onChange={handleInput}>
+                            <option value={1}>New</option>
+                            <option value={0}>Sale</option>
                         </select>
                         {renderSale()}
-                        <input name="company" type="company" placeholder="Company profile" onChange={handleData}/>
-                        <input name="avatar" type="file" multiple onChange={handleFile} />
-                        <textarea name="detail" type="detail" placeholder="Detail" onChange={handleData}/>
+                        <input name="company" type="company" placeholder="Company profile" onChange={handleInput} />
+                        <input name="file" type="file" onChange={handleFile} multiple />
+                        <textarea name="detail" placeholder="detail" onChange={handleInput} />
                         <button type="submit" className="btn btn-default">Signup</button>
                     </form>
                 </div>
             </div>
-      </div>
+        </div>
+
     )
 }
-export default Addproduct
+export default AddProduct

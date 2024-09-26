@@ -1,44 +1,36 @@
 import logo from './logo.svg';
 import './App.css';
-import Header from './Header';
-import Footer from './Footer';
-import Sitetab from './Component/Blog/Sitetab';
+import Header from './Component/Layout/Header';
+import Footer from './Component/Layout/Footer';
+import Menuleft from './Component/Layout/Menuleft';
+import Slider from './Component/Layout/Slider';
 import { useLocation } from 'react-router-dom';
-import MenuAccount from './Component/Blog/MenuAccount';
-import Slider from './Component/Blog/Slider';
-import { UserContext } from './UserContext';
-import { useState } from 'react';
+import MenuAccount from './Component/Layout/MenuAccount';
 import { Provider } from 'react-redux'
 import store from './store';
-import Test from './Page/Test';
-
 
 function App(props) {
-    let params1 = useLocation()
-    // console.log(params1['pathname']);
-    const [getQty, setQty] = useState(0)
-    
-    function tongQty(data){
-      setQty(data)
-      localStorage.setItem("demo4", JSON.stringify(data))
-    }
-
+  let params2 = useLocation()
+  
   return (
-    <>
-    <Provider store={store}>
-      <Header />
-      {params1['pathname'] === "/" && <Slider />}
-      <section>
-              <div className="container">
-                <div className="row">
-                  { params1['pathname'].includes("editproduct")  || params1['pathname'].includes("account") || params1['pathname'].includes("addproduct") || params1['pathname'].includes("myproduct")  ? <MenuAccount /> : <Sitetab /> && !params1['pathname'].includes("cart") && <Sitetab />}
-                  {props.children}  
-                </div>
-              </div>
-      </section>
-      <Footer />
+    <div>
+      <Provider store={store}>
+        <Header />
+        <section>
+          <div class="container">
+            <div class="row">
+              {params2['pathname'].includes("/account") ? <MenuAccount /> : <></> }
+              {params2['pathname'].includes("/cart") ||params2['pathname'].includes("/account") || params2['pathname'].includes("/blog/detail") || params2['pathname'].includes("/blog") || params2['pathname'].includes("/login") || params2['pathname'].includes("/signup") ? <></> : <Slider />}
+              {params2['pathname'].includes("/cart") ||params2['pathname'].includes("/account") || params2['pathname'].includes("/login") || params2['pathname'].includes("/signup") ? <></> : <Menuleft />}
+              {props.children}
+            </div>
+          </div>
+        </section>
+        <Footer />
       </Provider>
-    </>
+    </div>
+    
+    
   );
 }
 

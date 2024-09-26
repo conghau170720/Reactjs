@@ -1,33 +1,32 @@
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
-import Error from "./Error";
-import axios from "axios";
-import { json, useNavigate } from "react-router-dom";
+import Errors from "../Errors/Errors"
+import axios from "axios"
 
 function Login(){
-    const navigate = useNavigate();
-    const [getData, setData] = useState({
+    const navigate = useNavigate()
+    const [getData , setData] = useState({
         email:"",
         password:"",
-    })
-    const [getError, setError] = useState({})
-
-    const handleInput = (e) => {
-        const getName = e.target.name;
-        const getValue = e.target.value;
-        setData(state => ({...state,[getName]:getValue}))
+    })  
+    const [getErrors, setErrors] = useState({})
+    function handleInput(e){
+        const valueInput = e.target.value;
+        const valueName = e.target.name;
+        setData(state=> ({...state,[valueName]:valueInput}))
     }
-    
-    function hadleSubmit(e){
+
+    function handelSubmit(e){
         e.preventDefault();
-        let errorSubmit = {}
-        let flag = true
+        let errorSubmit = {};
+        let flag = true;
         if(getData.email == ""){
             errorSubmit.email = "vui lòng nhập email"
             flag = false
         }else{
             let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
             if(!regex.test(getData.email)){
-                errorSubmit.email = " email k dung dinh dang"
+                errorSubmit.email = "email không đúng"
                 flag = false
             }
         }
@@ -36,53 +35,60 @@ function Login(){
             flag = false
         }
         if(!flag){
-            setError(errorSubmit)
+            setErrors(errorSubmit)
         }else{
-            const data ={
+            const data = {
                 email : getData.email,
                 password : getData.password,
                 level : 0
             }
             axios.post("http://localhost/laravel8/laravel8/public/api/login", data)
             .then(response => {
-                if(response.data.errors){
-                  setError(response.data.errors);
+                if (response.data.errors) {
+                    setErrors(response.data.errors)
                 }else{
-                    console.log(response);
-                    const params ={
+                    const params = {
                         token : response.data.token,
                         user : response.data.Auth
-                       
                     }
-                    let fromUse = JSON.stringify(params)
-                    localStorage.setItem("demo2", fromUse)
-                    navigate("/")
-
-                    
+                    localStorage.setItem("demo1", JSON.stringify(params))
+                    const check = true
+                    localStorage.setItem("demo2", JSON.stringify(check))
+                    console.log(response);
+                    navigate('/')
                 }
             })
-            let xx = true
-            let check = JSON.stringify(xx)
-            localStorage.setItem("demo1", check)
+            .catch(function(error){
+                console.log(error);
+                
+            })
         }
+
+
     }
-   
+    
+
     return(
-                    <div className="col-sm-4 col-sm-offset-1">
-                        <div className="login-form">{/*login form*/}
+        <div className="pp">
+                    <div display="flex"  className="col-sm-4 col-sm-offset-1">
+                        <div className="login-form" >{/*login form*/}
                             <h2>Login to your account</h2>
-                            <Error errors = {getError}/>
-                            <form action="#" onSubmit={hadleSubmit}>
-                                <input type="email" placeholder="email"  name="email" onChange={handleInput}/>
-                                <input type="password" placeholder="password" name="password" onChange={handleInput}/>
+                            <Errors errors = {getErrors}/>
+                            <form onSubmit={handelSubmit} action="#">
+                                <input name="email" type="email" placeholder="Email Address" onChange={handleInput}/>
+                                <input name="password" type="password" placeholder="Password"  onChange={handleInput} />
                                 <span>
-                                <input type="checkbox" className="checkbox" /> 
-                                 Keep me signed in
+                                    <input name="checkbox" type="checkbox" className="checkbox"/> 
+                                    Keep me signed in
                                 </span>
-                                <button type="submit" className="btn btn-default">Login</button>
+                                <div className="zz">   
+                                    <button type="submit" className="btn btn-default">Login</button>
+                                    <button type="button" className="btn btn-default"><Link to="http://localhost:3000/signup">Signup</Link></button>
+                                </div>
                             </form>
-                        </div>
+                        </div>{/*/login form*/}
                     </div>
-        )
+        </div>
+    )
 }
 export default Login

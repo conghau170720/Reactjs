@@ -1422,9 +1422,13 @@ h2.title {
     overflow: hidden;
 }
 
-.login-form {}
+.login-form {
+    
+}
 
-.signup-form {}
+.signup-form {
+    padding-bottom: 30px;
+}
 
 .login-form h2,
 .signup-form h2 {
@@ -1453,7 +1457,7 @@ h2.title {
     width: 100%;
 }
 .signup-form form input.xx{
-    width: 50%;
+    width: 20%;
 }
 .signup-form form textarea {
     height: 150px;
